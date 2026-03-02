@@ -71,12 +71,15 @@ jobs:
           name: api
           path: dist/api/
 
+      - name: Install API dependencies
+        run: npm ci
+
       - name: Generate OpenAPI schema
         run: |
           node dist/api/index.js &
           API_PID=$!
           sleep 5
-          curl -s http://localhost:3000/docs/json -o docs/public/openapi.json
+          curl -s http://localhost:3000/docs/json -o docs/openapi.json
           kill $API_PID || true
 
       - name: Update Astro config
