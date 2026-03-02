@@ -5,7 +5,7 @@ on:
     branches:
       - main
     tags:
-      - 'v*'
+      - "v*"
   pull_request:
     branches:
       - main
@@ -14,23 +14,18 @@ jobs:
   build-api:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: 'npm'
+          cache: npm
 
-      - name: Install dependencies
-        run: npm ci
+      - run: npm ci
 
-      - name: Build API
-        run: npm run build:api
+      - run: npm run build:api
 
-      - name: Upload API artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: api
           path: dist/api/
@@ -39,23 +34,18 @@ jobs:
   build-chrome:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: 'npm'
+          cache: npm
 
-      - name: Install dependencies
-        run: npm ci
+      - run: npm ci
 
-      - name: Build Chrome Extension
-        run: npm run build:chrome
+      - run: npm run build:chrome
 
-      - name: Upload Chrome artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: chrome-extension
           path: dist/extension/chrome/
@@ -63,27 +53,40 @@ jobs:
 
   build-docs:
     runs-on: ubuntu-latest
+    needs: build-api
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: 'npm'
+          cache: npm
           cache-dependency-path: docs/package-lock.json
 
-      - name: Install dependencies
-        working-directory: docs
+      - working-directory: docs
         run: npm ci
 
-      - name: Build Docs
-        working-directory: docs
+      - uses: actions/download-artifact@v4
+        with:
+          name: api
+          path: dist/api/
+
+      - name: Generate OpenAPI schema
+        run: |
+          node dist/api/index.js &
+          API_PID=$!
+          sleep 5
+          curl -s http://localhost:3000/docs/json -o docs/public/openapi.json
+          kill $API_PID || true
+
+      - name: Update Astro config
+        run: |
+          sed -i "s|http://localhost:3000/docs/json|./openapi.json|g" docs/astro.config.mjs
+
+      - working-directory: docs
         run: npm run build
 
-      - name: Upload Docs artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: docs
           path: docs/dist/

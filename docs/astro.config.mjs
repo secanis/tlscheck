@@ -18,10 +18,9 @@ export default defineConfig({
       },
       plugins: [
         starlightOpenAPI([
-          // For production builds, update to: https://tlscheck.net/docs/json
           {
             base: '/api-reference/',
-            schema: 'http://localhost:3000/docs/json',
+            schema: './openapi.json',
             sidebar: {
               label: 'API Reference',
             },
