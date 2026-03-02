@@ -54,6 +54,15 @@ jobs:
 
       - run: npm run build:chrome
 
+      - name: Package as ZIP
+        run: cd dist/extension && zip -r chrome.zip chrome/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: chrome-extension-zip
+          path: dist/extension/chrome.zip
+          retention-days: 7
+
       - uses: actions/upload-artifact@v4
         with:
           name: chrome-extension
