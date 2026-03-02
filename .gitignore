@@ -1,0 +1,8 @@
+dist/
+dist-api/
+dist-extension/
+local/
+node_modules/
+.DS_Store
+docs/node_modules/
+docs/dist/

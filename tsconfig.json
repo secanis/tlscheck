@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "outDir": "dist/api",
+    "rootDir": "api",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "typeRoots": ["./api/types", "./node_modules/@types"]
+  },
+  "ts-node": {
+    "files": true
+  },
+  "include": ["api/**/*.ts", "api/types/**/*.d.ts"]
+}

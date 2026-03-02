@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main class="panel">
+      <header class="panel__header">
+        <div>
+          <p class="panel__eyebrow">TLSCheck</p>
+          <h1 class="panel__title">Certificate Status</h1>
+        </div>
+        <span id="stateBadge" class="badge badge--neutral">Status</span>
+      </header>
+      <section class="panel__content">
+        <div class="status-row">
+          <p id="status" class="status">Loading...</p>
+          <button
+            id="statusToggle"
+            class="status-help"
+            type="button"
+            aria-expanded="false"
+            aria-controls="statusInfo"
+            title="Show color thresholds"
+          >
+            ?
+          </button>
+        </div>
+        <div id="statusInfo" class="status-info" hidden>
+          <strong>Thresholds</strong>
+          <p>TLS 1.3 = good, TLS 1.2 = warn, TLS 1.1/1.0 = bad</p>
+          <p>Cipher: GCM/CHACHA20 = good, CBC = warn, RC4/3DES/DES/MD5/SHA1/NULL/EXPORT/ANON = bad</p>
+          <p>Validity: 30+ days = good, &lt;30 days = warn, &lt;7 days or expired = bad</p>
+          <p>Sources: OWASP TLS Cheat Sheet, Mozilla SSL Config, Qualys SSL Labs guidance.</p>
+        </div>
+        <div class="api">
+          <label class="api__label" for="apiUrl">API endpoint</label>
+          <div class="api__row">
+            <input id="apiUrl" class="api__input" type="url" placeholder="http://localhost:3000 (default)" />
+            <button id="saveApi" class="api__button" type="button">Save</button>
+          </div>
+        </div>
+        <dl class="details">
+          <div>
+            <dt>Subject</dt>
+            <dd id="subject">-</dd>
+          </div>
+          <div>
+            <dt>Issuer</dt>
+            <dd id="issuer">-</dd>
+          </div>
+          <div>
+            <dt>Valid From</dt>
+            <dd id="validFrom">-</dd>
+          </div>
+          <div>
+            <dt>Valid To</dt>
+            <dd id="validTo">-</dd>
+          </div>
+          <div>
+            <dt>Protocol</dt>
+            <dd id="protocol">-</dd>
+          </div>
+          <div>
+            <dt>Cipher</dt>
+            <dd id="cipher">-</dd>
+          </div>
+          <div>
+            <dt>Key Exchange</dt>
+            <dd id="keyExchange">-</dd>
+          </div>
+          <div>
+            <dt>Revocation</dt>
+            <dd id="revocation">-</dd>
+          </div>
+        </dl>
+        <div id="warnings" class="warnings" hidden></div>
+        <a id="sslLabsLink" class="ssl-labs" href="#" target="_blank" rel="noopener noreferrer">
+          Run SSL Labs scan
+        </a>
+      </section>
+    </main>
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

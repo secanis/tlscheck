@@ -1,0 +1,79 @@
+/* TLSCheck Custom Styles */
+:root {
+  --sl-color-accent-low: #1b8f3a;
+  --sl-color-accent: #22c55e;
+  --sl-color-accent-high: #4ade80;
+  --sl-color-white: #ffffff;
+  --sl-color-gray-1: #f5f5f5;
+  --sl-color-gray-2: #e5e5e5;
+  --sl-color-gray-3: #a3a3a3;
+  --sl-color-gray-4: #525252;
+  --sl-color-gray-5: #262626;
+  --sl-color-gray-6: #171717;
+  --sl-color-black: #0a0a0a;
+}
+
+/* Override Starlight hero gradient */
+.hero-html {
+  background: linear-gradient(135deg, #0a0a0a 0%, #171717 50%, #1b8f3a 100%);
+}
+
+/* Landing page button styles */
+.hero-cta {
+  display: inline-flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.hero-cta a {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.hero-cta .primary {
+  background: #22c55e;
+  color: #0a0a0a;
+}
+
+.hero-cta .primary:hover {
+  background: #4ade80;
+}
+
+.hero-cta .secondary {
+  background: transparent;
+  border: 2px solid #22c55e;
+  color: #22c55e;
+}
+
+.hero-cta .secondary:hover {
+  background: rgba(34, 197, 94, 0.1);
+}
+
+/* Features grid */
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.feature-card {
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  background: var(--sl-color-gray-6);
+  border: 1px solid var(--sl-color-gray-5);
+}
+
+.feature-card h3 {
+  color: #22c55e;
+  margin-bottom: 0.5rem;
+}
+
+.feature-card p {
+  color: var(--sl-color-gray-3);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
