@@ -101,13 +101,13 @@ jobs:
 
       - name: Update Docker Hub description
         if: github.ref == 'refs/heads/main'
-        uses: peter-evans/dockerhub-description@v4
+        uses: peter-evans/dockerhub-description@v7
         with:
           username: ${{ secrets.ENV_DOCKER_USERNAME }}
           password: ${{ secrets.ENV_DOCKER_PASSWORD }}
           repository: secanis/tlscheck-api
-          short_description: "TLS/SSL Certificate Checker API with OCSP/CRL revocation checking"
-          readme_file: README.md
+          short-description: "TLS/SSL Certificate Checker API with OCSP/CRL revocation checking"
+          readme-filepath: README.md
 
   build-chrome:
     runs-on: ubuntu-latest
