@@ -9,6 +9,11 @@ if (!platform) {
 }
 
 const rootDir = path.resolve(__dirname, '..');
+const packageJson = JSON.parse(fs.readFileSync(path.join(rootDir, 'package.json'), 'utf8'));
+const version = packageJson.version;
+
+console.log(`Building ${platform} v${version}...`);
+
 const srcDir = path.join(rootDir, 'src');
 const platformDir = path.join(rootDir, 'platforms', platform);
 const distDir = path.join(rootDir, 'dist', 'extension', platform);
@@ -85,8 +90,10 @@ const manifestSrc = path.join(platformDir, 'manifest.json');
 const manifestDest = path.join(distDir, 'manifest.json');
 
 if (fs.existsSync(manifestSrc)) {
-  fs.copyFileSync(manifestSrc, manifestDest);
-  console.log(`Copied manifest for ${platform}`);
+  let manifestContent = fs.readFileSync(manifestSrc, 'utf8');
+  manifestContent = manifestContent.replace(/"version":\s*"[^"]+"/, `"version": "${version}"`);
+  fs.writeFileSync(manifestDest, manifestContent);
+  console.log(`Copied manifest for ${platform} (v${version})`);
 } else {
   console.error(`Manifest not found for platform ${platform}`);
   process.exit(1);
