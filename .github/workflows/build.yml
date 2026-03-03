@@ -117,7 +117,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: npm
 
       - name: Get version from package.json
         id: version
@@ -125,16 +124,21 @@ jobs:
 
       - name: Update manifest version
         run: |
-          sed -i 's/"version": "[^"]*"/"version": "${{ steps.version.outputs.VERSION }}"/' platforms/chrome/manifest.json
+          sed -i 's/"version": "[^"]*"/"version": "'"${{ steps.version.outputs.VERSION }}"'"/' platforms/chrome/manifest.json
 
-      - run: npm ci
-
-      - run: npm run build:chrome
+      - name: Build Chrome extension
+        run: npm ci && npm run build:chrome
 
       - name: Package as ZIP
         run: |
           cd dist/extension/chrome
-          zip -r ../../chrome.zip .
+          zip -r ../chrome.zip .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: chrome-extension-zip
+          path: dist/extension/chrome.zip
+          retention-days: 7
 
       - uses: actions/upload-artifact@v4
         with:
