@@ -101,7 +101,7 @@ jobs:
 
       - name: Update Docker Hub description
         if: github.ref == 'refs/heads/main'
-        uses: peter-evans/dockerhub-description@v7
+        uses: peter-evans/dockerhub-description@v5
         with:
           username: ${{ secrets.ENV_DOCKER_USERNAME }}
           password: ${{ secrets.ENV_DOCKER_PASSWORD }}
