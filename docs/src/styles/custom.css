@@ -1,4 +1,3 @@
-/* TLSCheck Custom Styles */
 :root {
   --sl-color-accent-low: #1b8f3a;
   --sl-color-accent: #22c55e;
@@ -13,12 +12,44 @@
   --sl-color-black: #0a0a0a;
 }
 
-/* Override Starlight hero gradient */
+card-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+  gap: 1.5rem !important;
+  margin: 2rem 0;
+  width: 100%;
+}
+
+card {
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 1.5rem !important;
+  background: var(--sl-color-gray-6) !important;
+  border: 1px solid var(--sl-color-gray-5) !important;
+  border-radius: 0.5rem !important;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+card h3 {
+  color: var(--sl-color-accent) !important;
+  margin: 0 0 0.5rem 0 !important;
+}
+
+card p {
+  color: var(--sl-color-gray-3) !important;
+  margin: 0 !important;
+  line-height: 1.6;
+}
+
+cardgrid {
+  display: contents;
+}
+
 .hero-html {
   background: linear-gradient(135deg, #0a0a0a 0%, #171717 50%, #1b8f3a 100%);
 }
 
-/* Landing page button styles */
 .hero-cta {
   display: inline-flex;
   gap: 1rem;
@@ -52,7 +83,6 @@
   background: rgba(34, 197, 94, 0.1);
 }
 
-/* Features grid */
 .features {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));

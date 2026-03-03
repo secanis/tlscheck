@@ -1,0 +1,71 @@
+---
+title: Welcome
+description: TLSCheck - TLS/SSL Certificate Checker with revocation checking
+template: splash
+head:
+  - tag: style
+    content: |
+      .hero img {
+        max-width: 200px !important; /* Adjust this to your preferred size */
+        height: auto !important;
+      }
+      /* Optional: Adjusts the gap between image and text on mobile */
+      .hero {
+        gap: 1.5rem !important;
+      }
+hero:
+  tagline: TLS/SSL Certificate Checker with OCSP/CRL revocation checking
+  image:
+    file: ../../assets/logo.png
+  actions:
+    - text: Get Started
+      link: /getting-started/
+      icon: right-arrow
+      variant: primary
+    - text: View on GitHub
+      link: https://github.com/secanis/tlscheck
+      icon: external
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Key Features
+
+<CardGrid>
+  <Card title="Chrome Extension" icon="puzzle">
+    Lightweight browser extension that checks TLS certificates for every HTTPS page you visit. Instant visual feedback with clear status indicators.
+  </Card>
+  <Card title="Self-Hostable API" icon="rocket">
+    Run your own API backend. Built with Fastify for speed and low resource usage. Perfect for self-hosted environments.
+  </Card>
+  <Card title="Revocation Checking" icon="information">
+    OCSP and CRL certificate revocation checking is always enabled. Never miss a revoked certificate.
+  </Card>
+  <Card title="Chrome Web Store Ready" icon="setting">
+    Package as a ZIP directly from the build. Ready for Chrome Web Store submission.
+  </Card>
+  <Card title="Container Ready" icon="seti:docker">
+    Deploy anywhere with our Docker/Podman container. Lightweight Alpine-based image.
+  </Card>
+  <Card title="Open Source" icon="open-book">
+    Free to use, modify, and distribute. Licensed under AGPL-3.0.
+  </Card>
+</CardGrid>
+
+## Quick Start
+
+```bash
+# Install dependencies
+npm install
+
+# Build Chrome extension
+node scripts/build.js chrome
+
+# Run API locally
+npm run start:api
+
+# Or use Podman
+podman run --rm -p 3000:3000 ghcr.io/secanis/tlscheck-api:0.0.0-dev
+```
+
+The extension checks every HTTPS page automatically and displays certificate status with clear visual indicators.
