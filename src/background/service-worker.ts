@@ -2,7 +2,7 @@ import type { SecurityInfo, SecurityState } from "../types/ssl";
 import { fetchSecurityInfoFromApi } from "./api.js";
 import { getCached, setCached, getCacheConfig, getApiConfig, setCacheConfig } from "./cache.js";
 
-const defaultApiUrl = "http://localhost:3000";
+const defaultApiUrl = "https://free.tlscheck.net";
 
 const getStoredApiUrl = async (): Promise<string> => {
   const stored = await chrome.storage.local.get(["apiUrl"]);

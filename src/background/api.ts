@@ -23,7 +23,7 @@ type ApiCertificateResponse = {
   } | null;
 };
 
-const defaultApiUrl = "http://localhost:3000";
+const defaultApiUrl = "https://free.tlscheck.net";
 
 export const loadApiUrl = async () => {
   const stored = await chrome.storage.local.get(["apiUrl"]);

@@ -1,6 +1,6 @@
 import type { ApiCertificateResponse, SecurityInfo } from "../types/ssl";
 
-const defaultApiUrl = "http://localhost:3000";
+const defaultApiUrl = "https://free.tlscheck.net";
 
 const normalizeApiUrl = (value: string) => {
   if (!value) return "";

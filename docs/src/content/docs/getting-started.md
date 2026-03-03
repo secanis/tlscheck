@@ -27,7 +27,9 @@ node scripts/build.js chrome
 
 ### API Service
 
-The API can be run via Docker or directly from source.
+The extension comes with a **free public API** pre-configured: `https://free.tlscheck.net`
+
+You can also run your own API instance via Docker or directly from source.
 
 ### Run with Podman
 
