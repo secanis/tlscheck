@@ -110,11 +110,11 @@ jobs:
 
       - name: Get version from package.json
         id: version
-        run: echo "VERSION=$(node -p \"require('./package.json').version\")" >> $GITHUB_OUTPUT
+        run: echo "VERSION=$(node -p 'require('./package.json').version')" >> $GITHUB_OUTPUT
 
       - name: Update manifest version
         run: |
-          sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"${{ steps.version.outputs.VERSION }}\"/" platforms/chrome/manifest.json
+          sed -i 's/"version": "[^"]*"/"version": "${{ steps.version.outputs.VERSION }}"/' platforms/chrome/manifest.json
 
       - run: npm ci
 
@@ -143,7 +143,7 @@ jobs:
 
       - name: Get version from package.json
         id: version
-        run: echo "VERSION=$(node -p \"require('./package.json').version\")" >> $GITHUB_OUTPUT
+        run: echo 'VERSION=$(node -p "require('./package.json').version")' >> $GITHUB_OUTPUT
 
       - name: Update docs package.json version
         run: |
