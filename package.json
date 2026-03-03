@@ -24,6 +24,7 @@
   },
   "scripts": {
     "build:api": "tsc -p tsconfig.json",
+    "postbuild:api": "node scripts/generate-openapi.js",
     "build:chrome": "node scripts/build.js chrome",
     "build:extension": "tsc -p tsconfig.extension.json",
     "dev": "tsx --watch api/index.ts",

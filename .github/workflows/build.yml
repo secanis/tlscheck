@@ -99,6 +99,16 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Update Docker Hub description
+        if: github.ref == 'refs/heads/main'
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.ENV_DOCKER_USERNAME }}
+          password: ${{ secrets.ENV_DOCKER_PASSWORD }}
+          repository: secanis/tlscheck-api
+          short_description: "TLS/SSL Certificate Checker API with OCSP/CRL revocation checking"
+          readme_file: README.md
+
   build-chrome:
     runs-on: ubuntu-latest
     steps:
