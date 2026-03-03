@@ -128,27 +128,17 @@ jobs:
 
       - name: Build Chrome extension
         run: npm ci && npm run build:chrome
+        env:
+          NODE_OPTIONS: --openssl-legacy-provider
 
       - name: Package as ZIP
         run: |
           cd dist/extension/chrome
-          zip -r ../chrome.zip .
+          zip -r ../chrome-${{ steps.version.outputs.VERSION }}.zip .
 
       - uses: actions/upload-artifact@v4
         with:
-          name: chrome-extension-zip
-          path: dist/extension/chrome.zip
-          retention-days: 7
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: chrome-extension-zip
-          path: dist/extension/chrome.zip
-          retention-days: 7
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: chrome-extension
+          name: chrome-extension-v${{ steps.version.outputs.VERSION }}
           path: dist/extension/chrome/
           retention-days: 7
 
