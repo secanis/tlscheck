@@ -14,6 +14,7 @@ permissions:
   contents: read
   pages: write
   packages: write
+  id-token: write
 
 concurrency:
   group: pages
@@ -81,7 +82,7 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
             type=sha
-            type=raw,value=0.0.0-dev,enable=eq{{branch}},ref=refs/heads/main
+            type=raw,value=0.0.0-dev,enable=${{ github.ref == 'refs/heads/main' }}
           labels: |
             org.opencontainers.image.title=TLSCheck API
             org.opencontainers.image.description=TLS/SSL Certificate Checker API with OCSP/CRL revocation checking
