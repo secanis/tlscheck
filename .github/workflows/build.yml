@@ -132,7 +132,9 @@ jobs:
       - run: npm run build:chrome
 
       - name: Package as ZIP
-        run: cd dist/extension && zip -r chrome.zip chrome/
+        run: |
+          cd dist/extension/chrome
+          zip -r ../../chrome.zip .
 
       - uses: actions/upload-artifact@v4
         with:
