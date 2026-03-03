@@ -47,6 +47,7 @@ export default defineConfig({
             { label: 'Container', link: '/docker/' },
             { label: 'CI/CD', link: '/tests/' },
             { label: 'License', link: '/license/' },
+            { label: 'Privacy Policy', link: '/privacy/' },
             ...openAPISidebarGroups,
           ],
         },
