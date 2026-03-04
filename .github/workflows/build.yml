@@ -120,11 +120,19 @@ jobs:
 
       - name: Get version from package.json
         id: version
-        run: echo "VERSION=$(node -p 'require('./package.json').version')" >> $GITHUB_OUTPUT
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Update manifest version
         run: |
-          sed -i 's/"version": "[^"]*"/"version": "'"${{ steps.version.outputs.VERSION }}"'"/' platforms/chrome/manifest.json
+          VERSION=${{ steps.version.outputs.VERSION }}
+          node -e "
+            const fs = require('fs');
+            const manifest = JSON.parse(fs.readFileSync('platforms/chrome/manifest.json', 'utf8'));
+            manifest.version = '$VERSION';
+            fs.writeFileSync('platforms/chrome/manifest.json', JSON.stringify(manifest, null, 2));
+          "
 
       - name: Build Chrome extension
         run: npm ci && npm run build:chrome
