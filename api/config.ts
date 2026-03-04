@@ -16,7 +16,9 @@ const envSchema = z.object({
   RATE_LIMIT_MAX: z.coerce.number().int().positive().optional().default(30),
   MAX_BODY_BYTES: z.coerce.number().int().positive().optional().default(4096),
   REVOCATION_MODE: z.enum(["ocsp", "crl", "off"]).optional().default("ocsp"),
-  CACHE_TTL_MS: z.coerce.number().int().positive().optional().default(1800000)
+  CACHE_TTL_MS: z.coerce.number().int().positive().optional().default(1800000),
+  METRICS_ENABLED: z.coerce.boolean().optional().default(false),
+  METRICS_API_KEY: z.string().optional().default("")
 });
 
 export type AppConfig = {
@@ -30,6 +32,8 @@ export type AppConfig = {
   bodyLimitBytes: number;
   revocationMode: "ocsp" | "crl" | "off";
   cacheTtlMs: number;
+  metricsEnabled: boolean;
+  metricsApiKey: string;
 };
 
 export const getConfig = (): AppConfig => {
@@ -51,6 +55,8 @@ export const getConfig = (): AppConfig => {
     rateLimitMax: parsed.data.RATE_LIMIT_MAX,
     bodyLimitBytes: parsed.data.MAX_BODY_BYTES,
     revocationMode: parsed.data.REVOCATION_MODE,
-    cacheTtlMs: parsed.data.CACHE_TTL_MS
+    cacheTtlMs: parsed.data.CACHE_TTL_MS,
+    metricsEnabled: parsed.data.METRICS_ENABLED,
+    metricsApiKey: parsed.data.METRICS_API_KEY
   };
 };

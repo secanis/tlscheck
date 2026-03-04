@@ -19,6 +19,8 @@ The API service can be configured using the following environment variables:
 | `REVOCATION_MODE` | `ocsp` | Revocation check mode: `ocsp`, `crl`, or `off` |
 | `CACHE_TTL_MS` | `1800000` | Cache TTL in milliseconds (default: 30 minutes) |
 | `APP_VERSION` | `dev` | Application version string |
+| `METRICS_ENABLED` | `false` | Enable metrics endpoint |
+| `METRICS_API_KEY` | - | API key required to access metrics endpoint |
 
 ## Running from Source
 
@@ -64,3 +66,70 @@ The API exposes a public configuration endpoint at `GET /api/config` that return
 ```
 
 This endpoint is used by the extension to fetch cache settings and revocation mode.
+
+## Metrics Endpoint
+
+The API exposes a metrics endpoint at `GET /api/metrics` when enabled.
+
+### Enabling Metrics
+
+```bash
+export METRICS_ENABLED=true
+export METRICS_API_KEY=your-secret-key
+```
+
+### Accessing Metrics
+
+```bash
+curl -H "X-API-Key: your-secret-key" http://localhost:3000/metrics
+```
+
+### Response Example
+
+```json
+{
+  "totalRequests": 150,
+  "successfulRequests": 145,
+  "failedRequests": 5,
+  "cacheHits": 80,
+  "cacheMisses": 70,
+  "cacheHitRate": 53.33,
+  "revocationChecks": 70,
+  "revocationGood": 65,
+  "revocationRevoked": 3,
+  "revocationErrors": 1,
+  "revocationUnsupported": 1,
+  "revocationGoodRate": 92.86,
+  "revocationRevokedRate": 4.29,
+  "averageResponseTimeMs": 245,
+  "uptimeSeconds": 3600,
+  "startedAt": "2026-03-04T12:00:00.000Z",
+  "requestsByStatus": {
+    "200": 145,
+    "502": 5
+  },
+  "requestsByError": {
+    "certificate_fetch_error": 5
+  }
+}
+```
+
+### Metrics Description
+
+| Metric | Description |
+|--------|-------------|
+| `totalRequests` | Total number of requests |
+| `successfulRequests` | Requests that returned 200 OK |
+| `failedRequests` | Requests that returned errors |
+| `cacheHits` | Requests served from cache |
+| `cacheMisses` | Requests that required new certificate fetch |
+| `cacheHitRate` | Percentage of requests served from cache |
+| `revocationChecks` | Total revocation checks performed |
+| `revocationGood` | Certificates with "good" revocation status |
+| `revocationRevoked` | Certificates marked as revoked |
+| `revocationErrors` | Revocation check errors |
+| `revocationUnsupported` | Certificates without revocation info |
+| `averageResponseTimeMs` | Average response time in milliseconds |
+| `uptimeSeconds` | Time since API started |
+| `requestsByStatus` | Requests grouped by HTTP status code |
+| `requestsByError` | Failed requests grouped by error type |
