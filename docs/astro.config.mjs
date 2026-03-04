@@ -1,21 +1,16 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import starlightOpenAPI, { openAPISidebarGroups } from 'starlight-openapi';
+import astroMermaid from 'astro-mermaid';
 
 export default defineConfig({
   integrations: [
+    astroMermaid({
+      theme: 'base',
+      autoTheme: true
+    }),
     starlight({
       title: 'TLSCheck',
-      social: [
-        {
-          icon: 'github',
-          label: 'GitHub',
-          href: 'https://github.com/secanis/tlscheck',
-        },
-      ],
-      editLink: {
-        baseUrl: 'https://github.com/secanis/tlscheck/edit/main/',
-      },
       plugins: [
         starlightOpenAPI([
           {
@@ -27,11 +22,20 @@ export default defineConfig({
           },
         ]),
       ],
+      markdown: {
+        rehypePlugins: [
+          astroMermaid,
+        ],
+      },
+      editLink: {
+        baseUrl: 'https://github.com/secanis/tlscheck/edit/main/',
+      },
       sidebar: [
         {
           label: 'Getting Started',
           items: [
             { label: 'Introduction', link: '/getting-started/' },
+            { label: 'How It Works', link: '/how-it-works/' },
             { label: 'Privacy Policy', link: '/privacy/' },
             { label: 'License', link: '/license/' },
           ],
