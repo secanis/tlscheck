@@ -3,7 +3,6 @@ import { healthRoute } from "./health";
 import { versionRoute } from "./version";
 import { checkRoute } from "./check";
 import { configRoute } from "./config";
-import { metricsRoute } from "./metrics";
 
 type RouteOptions = {
   appVersion: string;
@@ -28,5 +27,4 @@ export const registerRoutes = (server: FastifyInstance, options: RouteOptions) =
     revocationMode: options.revocationMode,
     cacheTtlMs: options.cacheTtlMs
   });
-  metricsRoute(server);
 };

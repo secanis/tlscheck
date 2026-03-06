@@ -18,7 +18,6 @@ const envSchema = z.object({
   REVOCATION_MODE: z.enum(["ocsp", "crl", "off"]).optional().default("ocsp"),
   CACHE_TTL_MS: z.coerce.number().int().positive().optional().default(1800000),
   METRICS_ENABLED: z.coerce.boolean().optional().default(false),
-  METRICS_API_KEY: z.string().optional().default("")
 });
 
 export type AppConfig = {
@@ -33,7 +32,6 @@ export type AppConfig = {
   revocationMode: "ocsp" | "crl" | "off";
   cacheTtlMs: number;
   metricsEnabled: boolean;
-  metricsApiKey: string;
 };
 
 export const getConfig = (): AppConfig => {
@@ -57,6 +55,5 @@ export const getConfig = (): AppConfig => {
     revocationMode: parsed.data.REVOCATION_MODE,
     cacheTtlMs: parsed.data.CACHE_TTL_MS,
     metricsEnabled: parsed.data.METRICS_ENABLED,
-    metricsApiKey: parsed.data.METRICS_API_KEY
   };
 };

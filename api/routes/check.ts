@@ -6,13 +6,7 @@ import { mapCertificate } from "../services/map-certificate";
 import { rateLimiter } from "../services/rate-limiter";
 import { checkRevocation } from "../services/revocation";
 import { ApiCache } from "../services/cache";
-import {
-  recordRequestStart,
-  recordRequestEnd,
-  recordCacheHit,
-  recordCacheMiss,
-  recordRevocationCheck
-} from "../services/metrics";
+
 
 type CertificateResult = ReturnType<typeof mapCertificate>;
 
@@ -128,14 +122,13 @@ export const checkRoute = (server: FastifyInstance, options: CheckRouteOptions) 
       }
     },
     async (request: FastifyRequest<{ Querystring?: { revocationCheck?: string } }>, reply) => {
-      const requestStartTime = recordRequestStart();
       const ip = request.ip || request.socket.remoteAddress || "unknown";
+      const requestStartTime = Date.now();
       
       request.log.info({ ip, method: request.method, url: request.url }, "Incoming request");
 
       if (!limiter.allow(ip)) {
         request.log.warn({ ip }, "Rate limit exceeded");
-        recordRequestEnd(requestStartTime, false, 429, "rate_limit_exceeded");
         reply.code(429);
         return { error: "Rate limit exceeded" };
       }
@@ -146,7 +139,6 @@ export const checkRoute = (server: FastifyInstance, options: CheckRouteOptions) 
           { issues: parsed.error.issues, body: request.body },
           "Invalid /api/check payload"
         );
-        recordRequestEnd(requestStartTime, false, 400, "invalid_payload");
         reply.code(400);
         return { error: "Invalid payload" };
       }
@@ -160,7 +152,6 @@ export const checkRoute = (server: FastifyInstance, options: CheckRouteOptions) 
 
       if (!target) {
         request.log.warn({ domain: input }, "Invalid domain");
-        recordRequestEnd(requestStartTime, false, 400, "invalid_domain");
         reply.code(400);
         return { error: "Invalid domain" };
       }
@@ -171,8 +162,6 @@ export const checkRoute = (server: FastifyInstance, options: CheckRouteOptions) 
 
       const cached = certificateCache.get(cacheKey);
       if (cached) {
-        recordCacheHit();
-        recordRequestEnd(requestStartTime, true, 200);
         request.log.debug({ cacheKey, host: target.host }, "Returning cached certificate");
         request.log.info({ 
           host: target.host, 
@@ -181,8 +170,6 @@ export const checkRoute = (server: FastifyInstance, options: CheckRouteOptions) 
         }, "Certificate check complete");
         return cached;
       }
-
-      recordCacheMiss();
 
       try {
         request.log.debug({ host: target.host }, "Fetching certificate from target");
@@ -197,7 +184,6 @@ export const checkRoute = (server: FastifyInstance, options: CheckRouteOptions) 
             result.cert,
             options.revocationMode === "ocsp" ? result.issuer : undefined
           );
-          recordRevocationCheck(revocation.status);
           request.log.info({ 
             host: target.host, 
             revocationStatus: revocation.status, 
@@ -207,7 +193,6 @@ export const checkRoute = (server: FastifyInstance, options: CheckRouteOptions) 
 
         const response = mapCertificate({ ...result, revocation }, target);
         certificateCache.set(cacheKey, response);
-        recordRequestEnd(requestStartTime, true, 200);
         
         const durationMs = Date.now() - requestStartTime;
         request.log.info({ 
@@ -220,7 +205,6 @@ export const checkRoute = (server: FastifyInstance, options: CheckRouteOptions) 
         return response;
       } catch (error) {
         const message = error instanceof Error ? error.message : "Unknown error";
-        recordRequestEnd(requestStartTime, false, 502, "certificate_fetch_error");
         request.log.error({ 
           host: target?.host, 
           error: message, 

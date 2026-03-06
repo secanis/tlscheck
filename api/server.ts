@@ -4,6 +4,7 @@ import swaggerUi from "@fastify/swagger-ui";
 import cors from "@fastify/cors";
 import { registerRoutes } from "./routes/index";
 import { AppConfig } from "./config";
+import metricsPlugin from 'fastify-metrics'
 
 type ServerOptions = {
   config: AppConfig;
@@ -68,6 +69,10 @@ export const buildServer = async ({ config }: ServerOptions): Promise<FastifyIns
     transformSpecification: (swaggerObject) => swaggerObject,
     transformSpecificationClone: true
   });
+
+  await server.register(metricsPlugin, {endpoint: "/metrics", routeMetrics: {
+    enabled: config.metricsEnabled,
+  }});
 
   return server;
 };
