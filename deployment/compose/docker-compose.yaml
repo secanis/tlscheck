@@ -1,0 +1,102 @@
+version: "3.8"
+
+services:
+  traefik:
+    image: traefik:v3.6
+    container_name: traefik
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencrypt.acme.email=admin@example.com"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./letsencrypt:/letsencrypt
+    networks:
+      - tlscheck-network
+    restart: unless-stopped
+
+  tlscheck:
+    image: ghcr.io/secanis/tlscheck-api:main
+    container_name: tlscheck-api
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tlscheck.rule=Host(`tlscheck.example.com`)"
+      - "traefik.http.routers.tlscheck.entrypoints=websecure"
+      - "traefik.http.routers.tlscheck.tls=true"
+      - "traefik.http.routers.tlscheck.tls.certresolver=letsencrypt"
+      - "traefik.http.services.tlscheck.loadbalancer.server.port=3000"
+    environment:
+      - PORT=3000
+      - LOG_LEVEL=info
+      - CACHE_TTL_MS=1800000
+      - REVOCATION_MODE=ocsp
+      - RATE_LIMIT_MAX=30
+      - RATE_LIMIT_WINDOW_MS=60000
+      - METRICS_ENABLED=true
+      - METRICS_API_KEY=${METRICS_API_KEY:-changeme}
+    networks:
+      - tlscheck-network
+    restart: unless-stopped
+
+  # Prometheus and Grafana for monitoring, optional, comment out if not needed
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
+      - "--web.enable-lifecycle"
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    environment:
+      - METRICS_API_KEY=${METRICS_API_KEY:-changeme}
+    networks:
+      - tlscheck-network
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`tlscheck.example.com`) && PathPrefix(`/grafana`)"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls=true"
+      - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
+      - "traefik.http.middlewares.grafana-stripprefix.stripprefix.prefixes=/grafana"
+      - "traefik.http.routers.grafana.middlewares=grafana-stripprefix"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+    environment:
+      - GF_SERVER_ROOT_URL=https://tlscheck.example.com/grafana
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - grafana-data:/var/lib/grafana
+    networks:
+      - tlscheck-network
+    restart: unless-stopped
+
+volumes:
+  prometheus-data:
+  grafana-data:
+
+networks:
+  tlscheck-network:
+    driver: bridge
