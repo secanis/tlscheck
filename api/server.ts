@@ -70,9 +70,15 @@ export const buildServer = async ({ config }: ServerOptions): Promise<FastifyIns
     transformSpecificationClone: true
   });
 
-  await server.register(metricsPlugin, {endpoint: "/metrics", routeMetrics: {
-    enabled: config.metricsEnabled,
-  }});
+  if (config.metricsEnabled) {
+    await server.register(metricsPlugin, {
+      endpoint: "/metrics",
+      defaultMetrics: { enabled: true },
+      routeMetrics: {
+        enabled: true
+      }
+    });
+  }
 
   return server;
 };

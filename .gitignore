@@ -7,3 +7,4 @@ node_modules/
 docs/node_modules/
 docs/dist/
 docs/openapi.json
+.env

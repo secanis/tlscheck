@@ -6,6 +6,7 @@ import { mapCertificate } from "../services/map-certificate";
 import { rateLimiter } from "../services/rate-limiter";
 import { checkRevocation } from "../services/revocation";
 import { ApiCache } from "../services/cache";
+import { tlsCheckTotal, tlsCheckDurationSeconds, revocationCheckTotal, httpResponseStatusTotal } from "../services/metrics";
 
 
 type CertificateResult = ReturnType<typeof mapCertificate>;
@@ -130,6 +131,7 @@ export const checkRoute = (server: FastifyInstance, options: CheckRouteOptions) 
       if (!limiter.allow(ip)) {
         request.log.warn({ ip }, "Rate limit exceeded");
         reply.code(429);
+        httpResponseStatusTotal.inc({ status_code: '429', route: '/api/check' });
         return { error: "Rate limit exceeded" };
       }
 
@@ -140,6 +142,7 @@ export const checkRoute = (server: FastifyInstance, options: CheckRouteOptions) 
           "Invalid /api/check payload"
         );
         reply.code(400);
+        httpResponseStatusTotal.inc({ status_code: '400', route: '/api/check' });
         return { error: "Invalid payload" };
       }
 
@@ -153,6 +156,7 @@ export const checkRoute = (server: FastifyInstance, options: CheckRouteOptions) 
       if (!target) {
         request.log.warn({ domain: input }, "Invalid domain");
         reply.code(400);
+        httpResponseStatusTotal.inc({ status_code: '400', route: '/api/check' });
         return { error: "Invalid domain" };
       }
 
@@ -184,6 +188,7 @@ export const checkRoute = (server: FastifyInstance, options: CheckRouteOptions) 
             result.cert,
             options.revocationMode === "ocsp" ? result.issuer : undefined
           );
+          revocationCheckTotal.inc({ status: revocation.status, source: revocation.source });
           request.log.info({ 
             host: target.host, 
             revocationStatus: revocation.status, 
@@ -195,6 +200,10 @@ export const checkRoute = (server: FastifyInstance, options: CheckRouteOptions) 
         certificateCache.set(cacheKey, response);
         
         const durationMs = Date.now() - requestStartTime;
+        tlsCheckTotal.inc({ status: 'success', valid: response.valid ? 'true' : 'false' });
+        tlsCheckDurationSeconds.inc(durationMs / 1000);
+        httpResponseStatusTotal.inc({ status_code: '200', route: '/api/check' });
+        
         request.log.info({ 
           host: target.host, 
           valid: response.valid, 
@@ -205,12 +214,17 @@ export const checkRoute = (server: FastifyInstance, options: CheckRouteOptions) 
         return response;
       } catch (error) {
         const message = error instanceof Error ? error.message : "Unknown error";
+        const durationMs = Date.now() - requestStartTime;
+        tlsCheckTotal.inc({ status: 'error', valid: 'false' });
+        tlsCheckDurationSeconds.inc(durationMs / 1000);
+        
         request.log.error({ 
           host: target?.host, 
           error: message, 
           durationMs: Date.now() - requestStartTime 
         }, "Certificate check failed");
         reply.code(502);
+        httpResponseStatusTotal.inc({ status_code: '502', route: '/api/check' });
         return { error: message };
       }
     }

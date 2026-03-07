@@ -19,8 +19,7 @@ The API service can be configured using the following environment variables:
 | `REVOCATION_MODE` | `ocsp` | Revocation check mode: `ocsp`, `crl`, or `off` |
 | `CACHE_TTL_MS` | `1800000` | Cache TTL in milliseconds (default: 30 minutes) |
 | `APP_VERSION` | `dev` | Application version string |
-| `METRICS_ENABLED` | `false` | Enable metrics endpoint |
-| `METRICS_API_KEY` | - | API key required to access metrics endpoint |
+| `METRICS_ENABLED` | `false` | Enable Prometheus metrics endpoint at /metrics |
 
 ## Running from Source
 
@@ -69,67 +68,63 @@ This endpoint is used by the extension to fetch cache settings and revocation mo
 
 ## Metrics Endpoint
 
-The API exposes a metrics endpoint at `GET /api/metrics` when enabled.
+The API exposes a Prometheus-compatible metrics endpoint at `GET /metrics` when enabled.
 
 ### Enabling Metrics
 
 ```bash
 export METRICS_ENABLED=true
-export METRICS_API_KEY=your-secret-key
 ```
 
 ### Accessing Metrics
 
 ```bash
-curl -H "X-API-Key: your-secret-key" http://localhost:3000/metrics
+curl http://localhost:3000/metrics
 ```
 
-### Response Example
+### Prometheus Format
 
-```json
-{
-  "totalRequests": 150,
-  "successfulRequests": 145,
-  "failedRequests": 5,
-  "cacheHits": 80,
-  "cacheMisses": 70,
-  "cacheHitRate": 53.33,
-  "revocationChecks": 70,
-  "revocationGood": 65,
-  "revocationRevoked": 3,
-  "revocationErrors": 1,
-  "revocationUnsupported": 1,
-  "revocationGoodRate": 92.86,
-  "revocationRevokedRate": 4.29,
-  "averageResponseTimeMs": 245,
-  "uptimeSeconds": 3600,
-  "startedAt": "2026-03-04T12:00:00.000Z",
-  "requestsByStatus": {
-    "200": 145,
-    "502": 5
-  },
-  "requestsByError": {
-    "certificate_fetch_error": 5
-  }
-}
-```
+The endpoint returns metrics in Prometheus text format. Both default Node.js/fastify metrics and custom application metrics are exposed.
 
-### Metrics Description
+### Custom Application Metrics
+
+| Metric | Type | Labels | Description |
+|--------|------|--------|-------------|
+| `tls_check_total` | Counter | `status`, `valid` | Total TLS/SSL certificate checks performed |
+| `tls_check_duration_seconds_total` | Counter | - | Total time spent performing TLS checks |
+| `revocation_check_total` | Counter | `status`, `source` | Total revocation checks performed |
+| `http_response_status_total` | Counter | `status_code`, `route` | HTTP responses by status code and route |
+
+#### Labels
+
+- **tls_check_total**: `status` (success/error), `valid` (true/false)
+- **revocation_check_total**: `status` (good/revoked/unknown/error), `source` (ocsp/crl)
+- **http_response_status_total**: `status_code` (200/400/429/502), `route` (/api/check)
+
+### Default Metrics
+
+fastify-metrics also exposes standard Node.js and Fastify metrics:
 
 | Metric | Description |
 |--------|-------------|
-| `totalRequests` | Total number of requests |
-| `successfulRequests` | Requests that returned 200 OK |
-| `failedRequests` | Requests that returned errors |
-| `cacheHits` | Requests served from cache |
-| `cacheMisses` | Requests that required new certificate fetch |
-| `cacheHitRate` | Percentage of requests served from cache |
-| `revocationChecks` | Total revocation checks performed |
-| `revocationGood` | Certificates with "good" revocation status |
-| `revocationRevoked` | Certificates marked as revoked |
-| `revocationErrors` | Revocation check errors |
-| `revocationUnsupported` | Certificates without revocation info |
-| `averageResponseTimeMs` | Average response time in milliseconds |
-| `uptimeSeconds` | Time since API started |
-| `requestsByStatus` | Requests grouped by HTTP status code |
-| `requestsByError` | Failed requests grouped by error type |
+| `process_cpu_seconds_total` | CPU time spent |
+| `process_resident_memory_bytes` | Memory usage |
+| `nodejs_eventloop_lag_seconds` | Event loop lag |
+| `nodejs_gc_duration_seconds` | Garbage collection time |
+| `http_request_duration_seconds` | Request duration histogram |
+| `http_request_summary_seconds` | Request duration summary |
+
+### Prometheus Configuration
+
+Add to your `prometheus.yml`:
+
+```yaml
+scrape_configs:
+  - job_name: 'tlscheck-api'
+    static_configs:
+      - targets: ['api:3000']
+```
+
+### Grafana Dashboards
+
+Import the Node.js / Prometheus dashboard for additional visualizations.
