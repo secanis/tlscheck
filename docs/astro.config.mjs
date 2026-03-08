@@ -44,6 +44,7 @@ export default defineConfig({
           label: 'Configuration',
           items: [
             { label: 'Environment Variables', link: '/configuration/' },
+            { label: 'API Metrics', link: '/metrics/' },
           ],
         },
         {
