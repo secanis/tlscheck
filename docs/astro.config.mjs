@@ -51,8 +51,8 @@ export default defineConfig({
           label: 'Reference',
           items: [
             { label: 'UI Colors', link: '/ui-colors/' },
-            { label: 'Container', link: '/docker/' },
-            { label: 'CI/CD', link: '/tests/' },
+            { label: 'Container', link: '/container/' },
+            { label: 'CI/CD', link: '/cicd/' },
             ...openAPISidebarGroups,
           ],
         },
