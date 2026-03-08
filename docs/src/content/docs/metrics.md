@@ -3,9 +3,9 @@ title: Metrics Endpoint
 description: Configuration and custom metrics for tlscheck api.
 ---
 
-## Metrics Endpoint
-
 The API exposes a Prometheus-compatible metrics endpoint at `GET /metrics` when enabled.
+
+See [Evironment Variables](https://tlscheck.net/configuration/)
 
 ### Enabling Metrics
 

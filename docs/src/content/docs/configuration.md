@@ -1,9 +1,7 @@
 ---
-title: Configuration
+title: Environment Variables
 description: Environment variables and configuration options
 ---
-
-## Environment Variables
 
 The API service can be configured using the following environment variables:
 
