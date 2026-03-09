@@ -1,6 +1,6 @@
 {
   "name": "tlscheck",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "TLS/SSL Certificate Checker - Chrome/Browser Extension + API",
   "license": "AGPL-3.0",
   "repository": "github:secanis/tlscheck",
