@@ -18,6 +18,10 @@ npm run start:api
 podman run --rm --read-only --tmpfs /tmp -p 3000:3000 tlscheck/api
 ```
 
+### Signing
+
+google-chrome --pack-extension=dist/extension/chrome --pack-extension-key=signing/privatekey.pem
+
 ## Documentation
 
 Full documentation is available at [https://tlscheck.net/docs](https://tlscheck.net/docs):
