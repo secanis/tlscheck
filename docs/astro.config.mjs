@@ -3,6 +3,8 @@ import starlight from '@astrojs/starlight';
 import starlightOpenAPI, { openAPISidebarGroups } from 'starlight-openapi';
 import astroMermaid from 'astro-mermaid';
 
+const CustomFooter = './src/components/CustomFooter.astro';
+
 export default defineConfig({
   integrations: [
     astroMermaid({
@@ -11,6 +13,9 @@ export default defineConfig({
     }),
     starlight({
       title: 'TLSCheck',
+      components: {
+        Footer: CustomFooter,
+      },
       plugins: [
         starlightOpenAPI([
           {
