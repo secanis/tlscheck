@@ -1,4 +1,4 @@
-FROM node:24-alpine AS builder
+FROM node:26-alpine AS builder
 
 WORKDIR /app
 
@@ -10,7 +10,7 @@ COPY api ./api
 RUN npm run build:api
 
 # --- production image ---
-FROM node:24-alpine
+FROM node:26-alpine
 
 WORKDIR /app
 
