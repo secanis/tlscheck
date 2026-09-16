@@ -10,8 +10,10 @@
   },
   "dependencies": {
     "@astrojs/starlight": "^0.38.4",
-    "astro": "^6.1.9",
-    "astro-mermaid": "^2.0.1",
-    "starlight-openapi": "^0.25.0"
+    "@mermaid-js/layout-elk": "^1.0.0",
+    "astro": "^6.4.8",
+    "astro-mermaid": "^2.1.0",
+    "mermaid": "12.0.0",
+    "starlight-openapi": "0.25.0"
   }
 }
